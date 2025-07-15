@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | NexusFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4cc9f0;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #4bbf73;
+            --warning: #f0ad4e;
+            --danger: #d9534f;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --gradient: linear-gradient(135deg, var(--primary), var(--primary-light));
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-header {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+        }
+
+        .dashboard-header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .dashboard-header p {
+            font-weight: 300;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .user-profile {
+            position: absolute;
+            right: 2rem;
+            top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dashboard-nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .dashboard-nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-nav li {
+            margin: 0;
+        }
+
+        .dashboard-nav a {
+            display: block;
+            padding: 1.2rem 1.5rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .dashboard-nav a:hover {
+            color: var(--primary);
+        }
+
+        .dashboard-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .dashboard-nav a:hover::after {
+            width: 80%;
+        }
+
+        .dashboard-nav a i {
+            margin-right: 8px;
+        }
+
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .card-box {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid var(--primary);
+        }
+
+        .card-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-box h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .card-box p {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .card-box .card-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 2rem;
+            color: rgba(67, 97, 238, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .progress-card h4 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--gray);
+        }
+
+        .progress-container {
+            height: 10px;
+            background: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+
+        .projects-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .projects-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .projects-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .projects-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .projects-table tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(75, 191, 115, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(240, 173, 78, 0.1);
+            color: var(--warning);
+        }
+
+        .status-delayed {
+            background: rgba(217, 83, 79, 0.1);
+            color: var(--danger);
+        }
+
+        .priority-high {
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            color: var(--warning);
+        }
+
+        .priority-low {
+            color: var(--success);
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .team-member {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--primary);
+        }
+
+        .member-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .member-role {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .member-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .skill-tag {
+            background: var(--light-gray);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem 1rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+        }
+
+        .dashboard-footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: auto;
+        }
+
+        .dashboard-footer p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .team-members {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .dashboard-nav a {
+                padding: 0.8rem 1rem;
+            }
+            
+            .user-profile {
+                position: static;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .team-members {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-box, .progress-card, .activity-item, .team-member {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .card-box:nth-child(1) { animation-delay: 0.1s; }
+        .card-box:nth-child(2) { animation-delay: 0.2s; }
+        .card-box:nth-child(3) { animation-delay: 0.3s; }
+        .card-box:nth-child(4) { animation-delay: 0.4s; }
+        .progress-card:nth-child(1) { animation-delay: 0.2s; }
+        .progress-card:nth-child(2) { animation-delay: 0.3s; }
+        .progress-card:nth-child(3) { animation-delay: 0.4s; }
+        .progress-card:nth-child(4) { animation-delay: 0.5s; }
+        .activity-item:nth-child(1) { animation-delay: 0.3s; }
+        .activity-item:nth-child(2) { animation-delay: 0.4s; }
+        .activity-item:nth-child(3) { animation-delay: 0.5s; }
+        .team-member:nth-child(1) { animation-delay: 0.4s; }
+        .team-member:nth-child(2) { animation-delay: 0.5s; }
+        .team-member:nth-child(3) { animation-delay: 0.6s; }
+        .team-member:nth-child(4) { animation-delay: 0.7s; }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        <h1>Welcome back, Alex!</h1>
+        <p>Here's what's happening with your projects today</p>
+    </header>
+
+    <nav class="dashboard-nav">
+        <ul>
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-project-diagram"></i> Projects</a></li>
+            <li><a href="#"><i class="fas fa-tasks"></i> Tasks</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt"></i> Calendar</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Reports</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Team</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="dashboard-main container">
+        <div class="stats-grid">
+            <div class="card-box">
+                <h3>Active Projects</h3>
+                <p>12</p>
+                <div class="card-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+            </div>
+            <div class="card-box">
+                <h3>Tasks Due</h3>
+                <p>5</p>
+                <div class="card-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+            </div>
+            <div class="card-box">
+                <h3>Team Members</h3>
+                <p>8</p>
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="card-box">
+                <h3>Overdue Tasks</h3>
+                <p>2</p>
+                <div class="card-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="action-btn">
+                <i class="fas fa-plus"></i>
+                <span>New Project</span>
+            </button>
+            <button class="action-btn">
+                <i class="fas fa-tasks"></i>
+                <span>Add Task</span>
+            </button>
+            <button class="action-btn">
+                <i class="fas fa-user-plus"></i>
+                <span>Invite Member</span>
+            </button>
+            <button class="action-btn">
+                <i class="fas fa-file-export"></i>
+                <span>Generate Report</span>
+            </button>
+            <button class="action-btn">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Schedule Meeting</span>
+            </button>
+            <button class="action-btn">
+                <i class="fas fa-comments"></i>
+                <span>Team Chat</span>
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <h3 class="section-title"><i class="fas fa-project-diagram"></i> Recent Projects</h3>
+                <table class="projects-table">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Website Redesign</td>
+                            <td>May 15, 2023</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td><i class="fas fa-arrow-up priority-high"></i> High</td>
+                            <td>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: 75%"></div>
+                                </div>
+                                <span>75%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mobile App Development</td>
+                            <td>Jun 1, 2023</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td><i class="fas fa-arrow-up priority-high"></i> High</td>
+                            <td>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: 45%"></div>
+                                </div>
+                                <span>45%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Marketing Campaign</td>
+                            <td>Apr 28, 2023</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><i class="fas fa-equals priority-medium"></i> Medium</td>
+                            <td>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: 30%"></div>
+                                </div>
+                                <span>30%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Product Launch</td>
+                            <td>Mar 15, 2023</td>
+                            <td><span class="status-badge status-delayed">Delayed</span></td>
+                            <td><i class="fas fa-arrow-down priority-low"></i> Low</td>
+                            <td>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: 90%"></div>
+                                </div>
+                                <span>90%</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="section-title"><i class="fas fa-tasks"></i> Upcoming Tasks</h3>
+                <div class="progress-card">
+                    <h4>Complete homepage design</h4>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Due: Tomorrow</span>
+                        <span>65% completed</span>
+                    </div>
+                </div>
+                <div class="progress-card">
+                    <h4>Review mobile app wireframes</h4>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 20%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Due: In 3 days</span>
+                        <span>20% completed</span>
+                    </div>
+                </div>
+                <div class="progress-card">
+                    <h4>Prepare marketing materials</h4>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 45%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Due: Next week</span>
+                        <span>45% completed</span>
+                    </div>
+                </div>
+                <div class="progress-card">
+                    <h4>Client meeting preparation</h4>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 10%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Due: Friday</span>
+                        <span>10% completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <h3 class="section-title"><i class="fas fa-bell"></i> Recent Activity</h3>
+                <div class="recent-activity">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>You</strong> completed the login page design</p>
+                            <p class="activity-time">2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>Sarah</strong> commented on the marketing proposal</p>
+                            <p class="activity-time">4 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>Mike</strong> uploaded new wireframes</p>
+                            <p class="activity-time">Yesterday</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>You</strong> added a new team member</p>
+                            <p class="activity-time">2 days ago</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-users"></i> Team Members</h3>
+                <div class="team-members">
+                    <div class="team-member">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson" class="member-avatar">
+                        <h4 class="member-name">Sarah Johnson</h4>
+                        <p class="member-role">UI/UX Designer</p>
+                        <div class="member-skills">
+                            <span class="skill-tag">Figma</span>
+                            <span class="skill-tag">Photoshop</span>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Chen" class="member-avatar">
+                        <h4 class="member-name">Michael Chen</h4>
+                        <p class="member-role">Frontend Developer</p>
+                        <div class="member-skills">
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">JavaScript</span>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emma Rodriguez" class="member-avatar">
+                        <h4 class="member-name">Emma Rodriguez</h4>
+                        <p class="member-role">Project Manager</p>
+                        <div class="member-skills">
+                            <span class="skill-tag">Agile</span>
+                            <span class="skill-tag">Scrum</span>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David Kim" class="member-avatar">
+                        <h4 class="member-name">David Kim</h4>
+                        <p class="member-role">Backend Developer</p>
+                        <div class="member-skills">
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="dashboard-footer">
+        <p>&copy; 2025 NexusFlow. All rights reserved. | <a href="#" style="color: white;">Privacy Policy</a> | <a href="#" style="color: white;">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        // Initialize animations and interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress bars
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
+            });
+
+            // Set active nav item
+            const navLinks = document.querySelectorAll('.dashboard-nav a');
+            navLinks[0].classList.add('active');
+
+            // User dropdown functionality
+            const userAvatar = document.querySelector('.user-avatar');
+            userAvatar.addEventListener('click', function() {
+                alert('User profile menu would open here');
+            });
+
+            // Quick action buttons
+            const actionButtons = document.querySelectorAll('.action-btn');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.querySelector('span').textContent;
+                    alert(`"${action}" action would be performed here`);
+                });
+            });
+
+            // Table row click
+            const tableRows = document.querySelectorAll('.projects-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const projectName = this.cells[0].textContent;
+                    alert(`Opening details for project: ${projectName}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
